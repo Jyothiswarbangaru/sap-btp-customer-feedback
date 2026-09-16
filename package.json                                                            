@@ -1,0 +1,9 @@
+{
+  "name": "customer-feedback-api",
+  "version": "1.0.0",
+  "main": "app.js",
+  "dependencies": {
+    "@sap/hana-client": "^2.0.20",
+    "express": "^4.17.1"
+  }
+}

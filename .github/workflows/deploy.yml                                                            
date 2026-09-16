@@ -1,0 +1,33 @@
+name: Deploy to SAP BTP
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Log in to SAP BTP CLI
+        uses: SAP/cloud-sdk-pipeline@v2
+        with:
+          command: login
+          subaccount: ${{ secrets.SAP_SUBACCOUNT }}
+          apiKey: ${{ secrets.SAP_API_KEY }}
+
+      - name: Build Docker Image
+        run: |
+          docker build -t customer-feedback-app .
+
+      - name: Push Docker Image to SAP BTP
+        run: |
+          docker tag customer-feedback-app ${{ secrets.REGISTRY_URL }}/${{ secrets.SAP_SPACE }}/customer-feedback:latest
+          docker push ${{ secrets.REGISTRY_URL }}/${{ secrets.SAP_SPACE }}/customer-feedback:latest
+
+      - name: Deploy Application
+        run: |
+          cf push customer-feedback -o ${{ secrets.REGISTRY_URL }}/${{ secrets.SAP_SPACE }}/customer-feedback:latest
